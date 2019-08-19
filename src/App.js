@@ -5,9 +5,16 @@ import AddTodo from './components/AddTodo';
 import uuid from 'uuid';
 import About from './pages/About';
 import {BrowserRouter as Router, Route } from 'react-router-dom';
+import DelAllAndSelectAll from './components/DelAllAndSelectAll';
 import './App.css';
 
 class App extends Component {
+  constructor(props){
+    super(props);
+    this.handleSelectAll = this.handleSelectAll.bind(this);
+    this.btnToggleFlag = "selectAll";
+    this.selectAllBtnValue = "Select All";
+  }
   state = {
     todos: [
       {
@@ -56,6 +63,38 @@ class App extends Component {
     this.setState({todos: [...this.state.todos, newTodo]});
   }
 
+  // Select all btn
+  handleSelectAll = () => {
+   // console.log(this.btnToggleFlag);
+    if(this.btnToggleFlag == "selectAll"){
+      this.setState({todos: this.state.todos.map((todo) => {
+        if(todo.completed !== true){
+          todo.completed = true;
+        }
+        return todo;
+      })});
+
+      this.btnToggleFlag= "unselectAll";
+      this.selectAllBtnValue = "Unselect All";
+    } else if(this.btnToggleFlag == "unselectAll") {
+      this.setState({todos: this.state.todos.map((todo) => {
+        if(todo.completed !== false){
+          todo.completed = false;
+        }
+        return todo;
+      })});
+
+      this.btnToggleFlag= "selectAll";
+      this.selectAllBtnValue = "Select All";
+    }
+  }
+
+  // Delete all btn
+  handleDeleteAll = () => {
+    //console.log("delete all is clicked 2222"); 
+    this.setState({todos: this.state.todos.filter((todo) => (todo.completed !== true))});
+  }
+
   render() {
     //console.log(this.state.todos);
     return (
@@ -66,6 +105,11 @@ class App extends Component {
             <Route exact path="/" render={props => (
               <React.Fragment>
                 <AddTodo  callbackFromParent={this.callbackAddTodo} />
+                <DelAllAndSelectAll 
+                  todos={this.state.todos} 
+                  handleSelectAll={this.handleSelectAll} 
+                  handleDeleteAll={this.handleDeleteAll}
+                  selectAllBtnValue={this.selectAllBtnValue}/>
                 <Todos 
                   todos={this.state.todos} 
                   markComplete = {this.markComplete}
